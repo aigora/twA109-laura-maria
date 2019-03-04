@@ -5,7 +5,7 @@ Puerta de garaje automatica
 ## Integrantes del equipo
 
 Laura Villajos Mateo 54904
-María Ortega Monge 
+María Ortega Monge 54777 
 
 ## Objetivos del trabajo
 
