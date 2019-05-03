@@ -1,0 +1,102 @@
+
+#include <Servo.h>
+
+Servo myservo;
+const int pinBuzzer = 1;
+const int  inPin1=5;//apertura de puerta
+const int  inPin2=7;//cierre puerta
+
+const int  ROJOPin=9;
+const int  VERDEPin=10;
+const int  AZULPin=8;
+int pa=LOW;
+
+
+
+//DECLARACION DE FUNCIONES
+
+void cierra ()// variamos los valores de giro para que se abra
+{
+  digitalWrite(8,HIGH);
+digitalWrite(9,LOW);
+digitalWrite(10,LOW);
+ for(int i =0;i<95;i=i+2)
+ {
+  myservo.write(i);
+  delay(1000);
+ }
+ delay(1000);
+
+ 
+}
+void abre()// variamos los valores de giro para que se cierre
+{
+digitalWrite(8,HIGH);
+digitalWrite(9,LOW);
+digitalWrite(10,LOW);
+ for(int i=90;i>=0;i=i-2)
+ {
+  myservo.write(i);
+  delay(100);
+ }
+ delay(1000);
+ digitalWrite(8,HIGH);
+}
+void para () //funcion para que el motor no se mueva;la utilizaremos al inicio y cuando esté bajando y se pulse el botón abrir
+{
+	digitalWrite(inPin1,LOW);
+	digitalWrite(inPin2,LOW);
+         
+}
+
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+  
+myservo.attach(6);
+pinMode(inPin1,INPUT);
+pinMode(inPin2,INPUT);
+  pinMode(8,OUTPUT); //Rojo
+  pinMode(9,OUTPUT); //Azul
+  pinMode(10,OUTPUT); //Verde
+}
+
+  
+
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+para();
+	pa=LOW;// inicializamos la variable que almacena el valor del pulsador a un valor bajo
+	while(pa==LOW)//mientras el valor de pa siga siendo bajo (no lo hayamos pulsado)seguimos leyendo su estado
+	{
+		pa = digitalRead(inPin1);//esta funcion lee el estado del pin PA y cuando lo hayamos pulsado cambiará de LOW a HIGH y saltará del bucle
+		//SEMÁFORO EN ROJO MIENTRAS ESTÉ CERRADA
+		digitalWrite(9,HIGH);
+		digitalWrite(8,LOW);
+		digitalWrite(10,LOW);
+		
+	}
+	pa=LOW;//reinicializamos pa
+
+  abre();
+  para();
+
+	pa=LOW;// inicializamos la variable que almacena el valor del pulsador a un valor bajo
+	while(pa==LOW)//mientras el valor de pa siga siendo bajo (no lo hayamos pulsado)seguimos leyendo su estado
+	{
+		pa = digitalRead(inPin2);//esta funcion lee el estado del pin PA y cuando lo hayamos pulsado cambiará de LOW a HIGH y saltará del bucle
+		
+		digitalWrite(10,HIGH);
+		digitalWrite(9,LOW);
+		digitalWrite(8,LOW);
+		
+	}
+	pa=LOW;//reinicializamos pa
+
+  cierra();
+    
+  }
