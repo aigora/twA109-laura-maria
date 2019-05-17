@@ -1,0 +1,291 @@
+#include <LiquidCrystal.h>
+
+#include <Servo.h>
+
+ 
+
+Servo myservo;
+
+const int pinBuzzer = 12;
+
+int RS = 1;
+
+int E = 2;
+
+int D4 = 3;
+
+int D5 = 4;
+
+int D6 = 13;
+
+int D7 = 11;
+LiquidCrystal lcd (RS, E, D4, D5, D6, D7);
+
+int estado;
+
+char datoC;
+
+
+
+ 
+
+const int  inPin1=5;//apertura de puerta
+
+const int  inPin2=7;//cierre puerta
+
+ 
+
+const int  ROJOPin=9;
+
+const int  VERDEPin=10;
+
+//de momento no const int  AZULPin=8;
+
+int pa=LOW;
+
+ 
+
+ 
+
+ 
+
+//DECLARACION DE FUNCIONES
+
+ 
+
+void cierra ()// variamos los valores de giro para que se abra
+
+{
+   
+  Serial.println("se ha cerrado la puerta");
+
+  tone(pinBuzzer, 650);
+
+  digitalWrite(8,HIGH);
+
+digitalWrite(9,LOW);
+
+digitalWrite(10,LOW);
+
+for(int i =0;i<95;i=i+2)
+
+{
+
+  myservo.write(i);
+
+  delay(100);
+
+}
+
+delay(1000);
+
+digitalWrite(8,LOW);
+
+noTone(pinBuzzer);
+
+}
+
+void abre()// variamos los valores de giro para que se cierre
+
+{
+    Serial.println("se esta abriendo la puerta");  
+
+   tone(pinBuzzer, 650);
+
+digitalWrite(8,HIGH);
+
+digitalWrite(9,LOW);
+
+digitalWrite(10,LOW);
+
+for(int i=90;i>=0;i=i-2)
+
+{
+
+  myservo.write(i);
+
+  delay(100);
+
+}
+
+delay(1000);
+
+digitalWrite(8,LOW);
+
+noTone(pinBuzzer);
+
+}
+
+void para () //funcion para que el motor no se mueva;la utilizaremos al inicio y cuando estÃ© bajando y se pulse el botÃ³n abrir
+
+{
+  Serial.println("la puerta permanece cerrada hasta que se pulsa el boton");
+
+digitalWrite(inPin1,LOW);//ponemos losmpines  6 y 7 en balor bajo
+
+digitalWrite(inPin2,LOW);
+
+        
+
+}
+
+ 
+
+ 
+
+ 
+
+ 
+
+void setup() {
+
+  // put your setup code here, to run once:
+
+    lcd.begin(16,2);
+        lcd.setCursor (0,0);
+
+    lcd.print("trabajo");
+
+    lcd.setCursor (0,1);
+
+    lcd.print("puerta garaje");
+    delay(10000);
+
+  Serial.begin(9600);
+
+  pinMode(pinBuzzer,OUTPUT);
+
+myservo.attach(6);
+
+pinMode(inPin1,INPUT);
+
+pinMode(inPin2,INPUT);
+
+  pinMode(8,OUTPUT); //Rojo
+
+  pinMode(9,OUTPUT); //Azul
+
+  pinMode(10,OUTPUT); //Verde
+
+}
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+void loop() {
+
+ 
+
+ 
+
+ if (Serial.available() > 0)
+
+{
+
+   datoC=Serial.read();
+
+   if(datoC=='1')
+
+   estado=1;
+
+   else
+
+   if(datoC=='0')
+
+   estado=0;
+
+}
+
+switch (estado)
+
+{
+
+   case 0:
+
+   {
+
+     estado=0;
+
+     break;
+
+   }
+
+   case 1:
+
+   {
+
+ 
+para();
+
+pa=LOW;// inicializamos la variable que almacena el valor del pulsador a un valor bajo
+
+while(pa==LOW)//mientras el valor de pa siga siendo bajo (no lo hayamos pulsado)seguimos leyendo su estado
+
+{
+
+pa = digitalRead(inPin1);
+//esta funcion lee el estado del pin PA y cuando lo hayamos pulsado cambiarÃ¡ de LOW a HIGH y saltarÃ¡ del bucle
+
+//SEMÃ�FORO EN ROJO MIENTRAS ESTÃ‰ CERRADA
+
+digitalWrite(9,HIGH);
+
+digitalWrite(8,LOW);
+
+digitalWrite(10,LOW);
+
+ 
+
+}
+
+pa=LOW;//reinicializamos pa
+
+ 
+
+  abre();
+
+  para();
+
+//lo primero que hacemos es tener el motor parado para inicializar bajos los niveles de MAPin y MCPin
+
+pa=LOW;// inicializamos la variable que almacena el valor del pulsador a un valor bajo
+
+while(pa==LOW)//mientras el valor de pa siga siendo bajo (no lo hayamos pulsado)seguimos leyendo su estado
+
+{
+
+pa = digitalRead(inPin2);//esta funcion lee el estado del pin PA y cuando lo hayamos pulsado cambiarÃ¡ de LOW a HIGH y saltarÃ¡ del bucle
+
+//SEMÃ�FORO EN ROJO MIENTRAS ESTÃ‰ CERRADA
+
+digitalWrite(10,HIGH);
+
+digitalWrite(9,LOW);
+
+digitalWrite(8,LOW);
+
+ 
+
+}
+
+pa=LOW;//reinicializamos pa
+
+ 
+
+  cierra();
+
+   
+
+  }
+
+}
+
+}
+
